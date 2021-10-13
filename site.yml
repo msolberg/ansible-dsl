@@ -1,0 +1,16 @@
+---
+# This playbook describes an application deployment onto a single host
+
+# Provision Infrastructure
+- hosts: localhost
+
+  roles:
+    - X86Platform
+
+# Provision Application
+- hosts: application
+  
+  roles:
+    - RHELPlatform
+    - ExtPlatform
+    - Application

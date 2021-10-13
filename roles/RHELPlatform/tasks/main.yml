@@ -1,0 +1,21 @@
+---
+# This role contains common plays to all hosts
+
+- name: merge overrides
+  set_fact: settings={{ RHELPlatform | combine(Dependencies.RHELPlatform.overrides) }}
+
+- name: download satellite certs
+  yum: name=http://{{ settings.satellite_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm state=present
+
+- name: register system
+  redhat_subscription: activationkey={{ settings.satellite_key }} org_id={{ settings.satellite_org }}
+
+- name: install Satellite agents
+  yum: name=katello-agent,puppet state=present
+
+- name: start katello agent
+  service: name=goferd state=started enabled=yes
+
+- name: set kernel params
+  sysctl: name={{ item.name }} value={{ item.value }} state=present
+  with_items: "{{ settings.kernel_param | default([]) }}"

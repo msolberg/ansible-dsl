@@ -1,0 +1,58 @@
+---
+# This role deploys a virtual machine
+- name: merge overrides
+  set_fact: settings={{ X86Platform | combine(Dependencies.X86Platform.overrides) }}
+
+# Load OpenStack config (if not loaded)
+- stat: path="{{ lookup('env', 'OS_CLIENT_CONFIG_FILE') }}"
+  register: st
+- include_vars: "{{ lookup('env', 'OS_CLIENT_CONFIG_FILE') }}"
+  when: st.stat.exists and st.stat.isreg
+
+# Grab the auth variable from the cloud config
+# TODO: This grabs the last cloud only. Probably needs to be smarter than that.
+- name: set openstack auth
+  set_fact: auth="{{ item.value.auth }}"
+  with_dict: "{{ clouds }}"
+
+# If there are any additional filesystems, create block devices
+- name: Create cinder volumes
+  local_action:
+    module: os_volume
+    auth: "{{ auth }}"
+    state: present
+    size: 1
+    display_name: "{{ Application.name }}-{{ Application.version}}-{{ item.name }}"
+  with_items: "{{ Application.mounts | default([]) }}"
+  register: cinder
+
+- name: Launch X86 Instance
+  local_action:
+    module: os_server
+    auth: "{{ auth }}"
+    state: present
+    name: "{{ Application.name }}-{{ Application.version}}"
+    image: "{{ settings.os_image }}"
+    key_name: "{{ settings.os_keypair }}"
+    timeout: 200
+    flavor: "{{ settings.os_flavor }}"
+    floating_ip_pools: "{{ settings.os_floating_ip_pools }}"
+    nics:
+      - network: "{{ settings.os_network }}"
+    meta:
+      hostname: "{{ Application.name }}.openstacklocal"
+    volumes: "{{ cinder|json_query('results[*].volume.display_name') }}"
+  register: nova
+
+# wait 300 seconds for port 22 to become open and contain "OpenSSH", don't assume the inventory_hostname is resolvable
+# and don't start checking for 10 seconds
+- local_action: wait_for port=22 host="{{ nova.server.public_v4 }}" search_regex=OpenSSH delay=10
+
+- name: add instance to inventory
+  add_host:
+    name: "{{ Application.name }}.openstacklocal"
+    groups: application
+    ansible_host: "{{ nova.server.public_v4 }}"
+    ansible_user: cloud-user
+    ansible_become: true
+

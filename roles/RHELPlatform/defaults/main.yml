@@ -1,0 +1,7 @@
+---
+# Common variables
+RHELPlatform:
+  satellite_fqdn: satellite.example.com
+  satellite_key: activationkey
+  satellite_org: organization
+  kernel_param: []

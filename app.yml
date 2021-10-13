@@ -1,0 +1,39 @@
+---
+Application:
+  name: "httpd"
+  version: "2.4.6-45.el7_3.4"
+  dependencies:
+    - "apr-1.4.8-3.el7"
+    - "apr-util"
+    - "mailcap"
+  mounts:
+    - type: "block"
+      name: "/dev/vdb"
+      mountpoint: "/var/www/html/"
+
+Dependencies:
+  ExtPlatform:
+    version: 2.3
+    overrides:
+      mountpoint:
+        ibftlogdir: { size: 10G }
+
+  RHELPlatform:
+    version: 1.2
+    overrides:
+      satellite_fqdn: satellite.example.com
+      satellite_key: activation-key
+      satellite_org: organization
+      kernel_param:
+      - name: vm.swappiness 
+        value: 30
+      - name: vm.vfs_cache_pressure
+        value: 100
+  
+  X86Platform:
+    version: 1.2
+    hardware: s8
+    overrides: {}
+
+
+

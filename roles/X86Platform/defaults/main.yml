@@ -1,0 +1,9 @@
+---
+# Common variables
+
+X86Platform:
+  os_image: rhel-guest-image-7.3-35
+  os_network: private
+  os_flavor: m1.small
+  os_keypair: root
+  os_floating_ip_pools: public

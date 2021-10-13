@@ -1,0 +1,33 @@
+---
+# This role installs the application.
+
+- name: Install dependencies
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ Application.dependencies }}"
+
+- name: Install application
+  yum:
+    name: "{{ Application.name }}-{{ Application.version }}"
+
+- name: Setup up filesystems
+  filesystem:
+    dev: "{{ item.name }}"
+    fstype: ext4
+  with_items: "{{ Application.mounts | default([]) }}"
+
+- name: Ensure mountpoints exist
+  file:
+    path: "{{ item.mountpoint }}"
+    state: directory
+  with_items: "{{ Application.mounts | default([]) }}"
+
+- name: Setup up mounts
+  mount:
+    path: "{{ item.mountpoint }}"
+    src: "{{ item.name }}"
+    fstype: ext4
+    state: mounted
+  with_items: "{{ Application.mounts | default([]) }}"
+
