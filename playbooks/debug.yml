@@ -3,3 +3,6 @@
   tasks:
   - debug:
       msg: "{{ ansible_env }}"
+
+  - debug:
+      msg: "{{ env.INVENTORY_ID }}"
