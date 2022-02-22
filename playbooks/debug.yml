@@ -5,4 +5,4 @@
       msg: "{{ ansible_env }}"
 
   - debug:
-      msg: "{{ env.INVENTORY_ID }}"
+      msg: "{{ ansible_env.INVENTORY_ID }}"
