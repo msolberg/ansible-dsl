@@ -5,12 +5,11 @@
     debug:
       msg: "{{ ansible_env }}"
 
-  - name: Debug local ansible env
+  - name: Debug hostvars
     debug:
-      msg: "{{ ansible_env }}"
-      delegate_to: localhost
+      var: hostvars[inventory_hostname]
 
-  - name: Debug local ansible inventory_id
-    debug:
-      msg: "{{ ansible_env.INVENTORY_ID }}"
-      delegate_to: localhost
+  # - name: Debug local ansible inventory_id
+  #   debug:
+  #     msg: "{{ ansible_env.INVENTORY_ID }}"
+  #     delegate_to: localhost
