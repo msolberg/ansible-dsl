@@ -6,11 +6,11 @@
       msg: "{{ ansible_env }}"
 
   - name: Debug local ansible env
-    local_action:
-      module: debug
+    debug:
       msg: "{{ ansible_env }}"
+      delegate_to: localhost
 
   - name: Debug local ansible inventory_id
-    local_action:
-      module: debug
+    debug:
       msg: "{{ ansible_env.INVENTORY_ID }}"
+      delegate_to: localhost
