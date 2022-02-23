@@ -1,8 +1,16 @@
 ---
 - hosts: all
   tasks:
-  - debug:
+  - name: Debug remote ansible env
+    debug:
       msg: "{{ ansible_env }}"
 
-  - debug:
+  - name: Debug local ansible env
+    local_action:
+      module: debug
+      msg: "{{ ansible_env }}"
+
+  - name: Debug local ansible inventory_id
+    local_action:
+      module: debug
       msg: "{{ ansible_env.INVENTORY_ID }}"
