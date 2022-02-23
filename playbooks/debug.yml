@@ -9,7 +9,6 @@
     debug:
       var: hostvars[inventory_hostname]
 
-  # - name: Debug local ansible inventory_id
-  #   debug:
-  #     msg: "{{ ansible_env.INVENTORY_ID }}"
-  #     delegate_to: localhost
+  - name: Debug local ansible inventory_id
+    debug:
+      var: hostvars[inventory_hostname]['tower_inventory_id']
